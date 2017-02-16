@@ -1,0 +1,53 @@
+<div layout="column" flex layout-fill>
+  <header-frame></header-frame>
+  <div ng-show="!ctrl.loggedIn" layout-padding>
+    <div layout="row" layout-align="center center" >
+    <a href="https://slack.com/oauth/authorize?scope=chat:write:user,channels:read,channels:write,channels:history,im:history,im:read,im:write,users:read&client_id={SLACK_CLIENT_ID}"><img src="https://api.slack.com/img/sign_in_with_slack.png" /></a>
+  </div>
+  </div>
+  <div flex ng-show="ctrl.loggedIn">
+    <div layout="row" layout-fill>
+      <div style="height: 100%" flex-gt-sm="20">
+        <md-sidenav md-is-locked-open="$mdMedia('gt-sm')"
+                    flex="100"
+                    md-component-id="left"
+                    md-whiteframe="2"
+                    style="height: 100%">
+          <md-list>
+            <md-subheader class="md-no-sticky">Direct Message<span class="folder-icon"></span></md-subheader>
+            <md-divider></md-divider>
+            <md-input-container class="md-block" flex>
+              <label>Filter</label>
+              <input ng-model="searchText">
+            </md-input-container>
+            <div ng-repeat="member in ctrl.chatgroups | filter:searchText">
+              <md-list-item ng-show="!member.deleted" ng-click="ctrl.openChat(member.id, member.name)" layout="row" layout-align="space-between center">
+                <img class="md-avatar" ng-src="{{member.profile.image_32}}"><p> {{ member.name }} </p>
+              </md-list-item>
+            </div>
+          </md-list>
+        </md-sidenav>
+      </div>
+
+      <div class="column" style="height: 100%" layout-fill flex ng-show="ctrl.chatUser.id != null">
+        <div scroll-to-bottom="ctrl.chatMessages" class="row" style="height:90%;overflow:scroll" flex>
+        <md-content md-scroll-y>
+          <md-list>
+            <md-subheader class="md-info">Messages</md-subheader>
+            <md-list-item ng-repeat="message in ctrl.chatMessages | orderBy:'ts'" message="message">
+              {{ctrl.getUsername(message.user)}} : {{message.text}}
+            </md-list-item>
+          </md-list>
+        </md-content>
+      </div>
+        <div class="row" style="position:fixed;bottom:0px;width:100%" flex>
+            <md-input-container class="md-block" flex>
+              <label>New Message</label>
+              <input type="text" ng-enter="ctrl.sendMessage()" ng-model="newMessage" md-maxlength="350"/>
+            </md-input-container>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
